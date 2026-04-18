@@ -1,8 +1,10 @@
-[🇬🇧 English](README.md)
+[🇬🇧 English](README.md) · [🇯🇵 日本語](README.ja.md) · [🇨🇳 中文](README.zh.md)
 
 # AI-Native Design
 
 **AI가 이해하고, 수정하고, 배포하기 좋은 코드 구조 설계 원칙.**
+
+> 맥락: 이 원칙들은 [**NSKit**](https://github.com/nskit-io/nskit-io)의 뼈대입니다 — *갇혀 있어서 무한 조합*. 프로덕션 웹앱 플랫폼으로서 이 원칙을 실제로 돌아가는 서비스로 구현합니다. AI 비주얼 아티팩트 도구(Claude Design, v0, Lovable)는 다른 레이어에 있습니다 — 그들은 목업을 생성하고, NSKit은 이 원칙을 **실제로 돌아가는 코드**에 적용합니다.
 
 > 코드 구조를 사람의 가독성이 아니라, AI가 실제로 코드를 처리하고 수정하는 방식에 맞춰 최적화하면 어떨까?
 

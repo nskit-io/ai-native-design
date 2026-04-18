@@ -1,8 +1,10 @@
-[🇰🇷 한국어](README.ko.md)
+[🇰🇷 한국어](README.ko.md) · [🇯🇵 日本語](README.ja.md) · [🇨🇳 中文](README.zh.md)
 
 # AI-Native Design
 
 **Design principles for structuring code that AI understands, modifies, and ships.**
+
+> Context: these principles power [**NSKit**](https://github.com/nskit-io/nskit-io) — *bound by structure, free to combine.* A production web-app platform that turns these principles into running services. AI visual-artifact tools (Claude Design, v0, Lovable) sit at a different layer — they generate mockups; NSKit applies AI-Native Design to the code that actually runs.
 
 > What if we optimized code structure not for human reading habits, but for how AI actually processes and modifies code?
 
