@@ -114,19 +114,19 @@ The sweet spot exists because:
 - **Too large** (2,000+ lines): AI loses track of earlier context. Modifications in one section inadvertently break another. Accuracy drops to a coin flip.
 - **500-800 lines**: Enough context for a complete, self-contained component. Small enough for AI to hold the entire file in working memory with high fidelity.
 
-**Real data from NSKit framework** (20 production JS files, 11,767 total lines):
+**Real data from NSKit framework** (20 production JS files, 11,280 total lines):
 
 | Category | File | Lines |
 |---|---|---|
-| Core | nskit-api.js | 851 |
+| Core | nskit-api.js | 866 |
 | Core | nskit-util.js | 580 |
-| Core | nskit-core.js | 319 |
-| Core | nskit-lang.js | 322 |
+| Core | nskit-core.js | 329 |
+| Core | nskit-lang.js | 373 |
 | Core | nskit-auth.js | 199 |
 | Core | nskit-event.js | 138 |
 | Layout | nskit-page.js | 1,022 |
 | Layout | nskit-dialog.js | 1,035 |
-| Layout | nskit-panel.js | 889 |
+| Layout | nskit-panel.js | 903 |
 | Layout | nskit-scene.js | 564 |
 | Layout | nskit-part.js | 489 |
 | Widget | ns-select.js | 1,040 |
@@ -135,9 +135,9 @@ The sweet spot exists because:
 | Widget | ns-checkbox.js | 701 |
 | Widget | ns-textarea.js | 331 |
 | Widget | nskit-widget.js | 433 |
-| **Average** | | **588 lines** |
+| **Average** | | **564 lines** |
 
-Average file size: **588 lines** -- right in the sweet spot.
+Average file size: **564 lines** -- right in the sweet spot.
 
 ---
 
