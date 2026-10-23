@@ -109,27 +109,35 @@ AI-Native Design에서 가장 실행 가능한 통찰입니다. 실전 측정을
 
 <img src="https://mermaid.ink/img/eHljaGFydC1iZXRhCiAgICB0aXRsZSAiQUkgQWNjdXJhY3kgdnMgRmlsZSBTaXplIgogICAgeC1heGlzICJGaWxlIFNpemUgKGxpbmVzKSIgWzEwMCwgMjAwLCAzMDAsIDQwMCwgNTAwLCA2MDAsIDcwMCwgODAwLCA5MDAsIDEwMDAsIDE1MDAsIDIwMDBdCiAgICB5LWF4aXMgIkFjY3VyYWN5ICglKSIgNDAgLS0+IDEwMAogICAgbGluZSBbOTUsIDkzLCA5MSwgODgsIDg1LCA4MywgODAsIDc3LCA3NCwgNzAsIDYwLCA1MF0=" alt="AI 정확도 vs 파일 크기" />
 
-**NSKit 프레임워크 실측 데이터** (20개 프로덕션 JS 파일, 총 11,280줄):
+**NSKit 프레임워크 실측 데이터** (22개 프로덕션 JS 파일, 총 11,850줄):
 
 | 카테고리 | 파일 | 줄 수 |
 |---|---|---|
-| Core | nskit-api.js | 866 |
+| Core | nskit-api.js | 815 |
 | Core | nskit-util.js | 580 |
-| Core | nskit-core.js | 329 |
+| Core | nskit-core.js | 406 |
 | Core | nskit-lang.js | 373 |
-| Layout | nskit-page.js | 1,022 |
-| Layout | nskit-dialog.js | 1,035 |
-| Layout | nskit-panel.js | 903 |
-| Layout | nskit-scene.js | 564 |
-| Layout | nskit-part.js | 489 |
+| Core | nskit-trace.js | 207 |
+| Core | nskit-auth.js | 199 |
+| Core | nskit-event.js | 160 |
+| Layout | nskit-dialog.js | 1,044 |
+| Layout | nskit-page.js | 1,043 |
+| Layout | nskit-panel.js | 937 |
+| Layout | nskit-scene.js | 580 |
+| Layout | nskit-part.js | 505 |
 | Widget | ns-select.js | 1,040 |
 | Widget | ns-table.js | 971 |
 | Widget | ns-input.js | 729 |
 | Widget | ns-checkbox.js | 701 |
 | Widget | nskit-widget.js | 433 |
-| **평균** | | **564줄** |
+| Widget | ns-textarea.js | 331 |
+| Widget | ns-button.js | 218 |
+| Bootstrap | nskit-loader.js | 266 |
+| Bootstrap | nskit.js | 166 |
+| Bootstrap | nskit-init.js | 146 |
+| **평균** | | **539줄** |
 
-평균 파일 크기: **564줄** -- 스위트 스팟 정중앙.
+평균 파일 크기: **539줄** -- 스위트 스팟(500-800줄) 안.
 
 ---
 

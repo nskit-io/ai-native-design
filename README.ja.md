@@ -38,27 +38,26 @@ React、Vue、Angular のような現代フレームワークは **Human Develop
 ## 6つの原則
 
 1. **Self-Contained Files** — HTML + CSS + JS を1ファイルに。import を辿らなくて済む。
-2. **Small Focused Files (500〜800 行)** — 文脈ウィンドウに最適化。
-3. **Convention over Types** — 予測可能なパターンが型より AI を助ける。
-4. **No Build Process** — バンドラ起因のエラーを排除。
-5. **File-scoped State** — 共有可変状態なし。並列 AI セッションで衝突ゼロ。
-6. **Predictable File Layout** — AI が見つけ方を学ばなくていい。
+2. **500〜800 行のスイートスポット** — 文脈ウィンドウに最適化。NSKit フレームワーク実測: JS 22 ファイル・計 11,850 行・平均 539 行。
+3. **No Build Process** — バンドラ・トランスパイル起因のエラーをカテゴリごと排除。
+4. **Convention over Configuration** — 予測可能なパターンが設定より AI を助ける。
+5. **設計目標としてのトークン効率** — AI が読む1行ごとにトークンがかかる。
+6. **Parallel AI Sessions** — 共有可変状態なし。並列 AI セッションで衝突ゼロ。
 
 各原則のコード例と根拠は [英語版 README](README.md) 参照。
 
 ---
 
-## 実測ベンチマーク(AI トークン効率)
+## トークン効率(推定)
 
-NSKit プロダクション 100+ ファイルでの実測値:
+カードコンポーネントのクリックハンドラを1つ変更する場合の推定値:
 
-| 比較対象 | 1 変更あたりの平均トークン |
+| 比較対象 | 1 変更あたりのトークン |
 |---|---|
-| React + TypeScript(モジュール分割) | ~25,000 |
-| Next.js + TypeScript | ~18,000 |
-| **NSKit(Self-Contained)** | **~800** |
+| React(モジュール分割) | ~25,000(中央推定値) |
+| **AI-Native(Self-Contained)** | **~800** |
 
-**30倍の効率**。同じ月次 AI 予算で、NSKit では 30 倍の機能を出荷できます。
+**約 31 倍の効率**。推定方法と前提は [benchmarks/token-comparison.md](benchmarks/token-comparison.md) を参照。実際の値はプロジェクトによって異なります。
 
 ---
 

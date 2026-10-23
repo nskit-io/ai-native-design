@@ -38,27 +38,26 @@ React、Vue、Angular 等现代框架是为 **Human Developer Experience** 精�
 ## 六条原则
 
 1. **Self-Contained Files** — HTML + CSS + JS 合成一个文件。不用追踪 import。
-2. **Small Focused Files(500~800 行)** — 针对上下文窗口优化。
-3. **Convention over Types** — 可预测的模式比类型更帮助 AI。
-4. **No Build Process** — 消除捆绑器引发的错误。
-5. **File-scoped State** — 无共享可变状态。并行 AI 会话零冲突。
-6. **Predictable File Layout** — AI 不用学「在哪找」。
+2. **500~800 行的最佳区间** — 针对上下文窗口优化。NSKit 框架实测:22 个 JS 文件、共 11,850 行、平均 539 行。
+3. **No Build Process** — 从类别上消除打包与转译引发的错误。
+4. **Convention over Configuration** — 可预测的模式比配置更帮助 AI。
+5. **把 Token 效率当作设计目标** — AI 读的每一行都要消耗 token。
+6. **Parallel AI Sessions** — 无共享可变状态。并行 AI 会话零冲突。
 
 各原则的代码示例与论据见 [英文版 README](README.md)。
 
 ---
 
-## 实测基准(AI Token 效率)
+## Token 效率(估算)
 
-在 NSKit 生产环境 100+ 文件上的实测:
+修改卡片组件中一个点击处理函数时的估算:
 
-| 对比 | 每次变更平均 token |
+| 对比 | 每次变更 token |
 |---|---|
-| React + TypeScript(模块化) | ~25,000 |
-| Next.js + TypeScript | ~18,000 |
-| **NSKit(Self-Contained)** | **~800** |
+| React(模块化) | ~25,000(中位估算) |
+| **AI-Native(Self-Contained)** | **~800** |
 
-**30 倍效率**。相同月度 AI 预算下,NSKit 能交付 30 倍功能。
+**约 31 倍效率**。估算方法与前提见 [benchmarks/token-comparison.md](benchmarks/token-comparison.md)。实际数值因项目而异。
 
 ---
 
