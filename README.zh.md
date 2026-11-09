@@ -16,7 +16,7 @@ React、Vue、Angular 等现代框架是为 **Human Developer Experience** 精�
 
 但当 AI 成为主要协作者 — 读代码、理解上下文、做修改、交付功能 — 优化目标就不同了。**AI-Native Design** 是从「什么样的结构能让 AI 工作得最准确、最高效?」出发的一组架构原则。
 
-它不是一个框架或库,而是 **由生产系统基准实测支撑的设计哲学**。
+它不是一个框架或库,而是 **源自生产系统、以行数实测和 token 估算为依据的设计哲学**。
 
 ---
 
@@ -38,7 +38,7 @@ React、Vue、Angular 等现代框架是为 **Human Developer Experience** 精�
 ## 六条原则
 
 1. **Self-Contained Files** — HTML + CSS + JS 合成一个文件。不用追踪 import。
-2. **500~800 行的最佳区间** — 针对上下文窗口优化。NSKit 框架实测:22 个 JS 文件、共 11,850 行、平均 539 行。
+2. **500~800 行的最佳区间** — 针对上下文窗口优化。NSKit 框架实测:22 个 JS 文件、共 11,850 行、平均 539 行。文件大小与 AI 修改准确率的关系(约 100 行约 95%、2,000 行以上约 50%)是基于实际工作的**经验估计**,并非受控基准测试。超过 800 行的例外是 5 个框架内部文件(dialog 1,044 / page 1,043 / select 1,040 / table 971 / panel 937 行),为把一个层或组件的完整内容放在一处,其上限按约 1,000 行处理。
 3. **No Build Process** — 从类别上消除打包与转译引发的错误。
 4. **Convention over Configuration** — 可预测的模式比配置更帮助 AI。
 5. **把 Token 效率当作设计目标** — AI 读的每一行都要消耗 token。
@@ -52,12 +52,12 @@ React、Vue、Angular 等现代框架是为 **Human Developer Experience** 精�
 
 修改卡片组件中一个点击处理函数时的估算:
 
-| 对比 | 每次变更 token |
-|---|---|
-| React(模块化) | ~25,000(中位估算) |
-| **AI-Native(Self-Contained)** | **~800** |
+| 对比 | 需读取的文件数 | 每次变更 token |
+|---|---|---|
+| React(模块化) | 8 | ~18,800(940 行,范围 ~15,000~37,000) |
+| **AI-Native(Self-Contained)** | **1** | **~12,000(600 行)** |
 
-**约 31 倍效率**。估算方法与前提见 [benchmarks/token-comparison.md](benchmarks/token-comparison.md)。实际数值因项目而异。
+两者都用同一方法(行数 × 每行约 20 token)。token **约少 1.6 倍**(整个范围约 1.3~3 倍)。更大的差别在于需读取的文件数(8~15 → 1),以及无需跨文件追踪。估算方法与前提见 [benchmarks/token-comparison.md](benchmarks/token-comparison.md)。实际数值因项目而异。
 
 ---
 

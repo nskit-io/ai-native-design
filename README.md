@@ -12,7 +12,7 @@ Modern frameworks like React, Vue, and Angular are masterfully designed for **Hu
 
 But when AI is your primary collaborator -- reading your code, understanding context, making changes, and shipping features -- the optimization target shifts. **AI-Native Design** is a set of architectural principles that emerge when you ask: *"What structure lets AI work most accurately and efficiently?"*
 
-This is not a framework or a library. It is a design philosophy, backed by real-world benchmarks from production systems.
+This is not a framework or a library. It is a design philosophy, drawn from production systems and backed by line counts and token estimates (methodology in [benchmarks/token-comparison.md](benchmarks/token-comparison.md)).
 
 ---
 
@@ -97,9 +97,9 @@ The modular approach is excellent for human teams -- clear separation, testable 
 
 ### 2. The 500-800 Line Sweet Spot
 
-This is arguably the most actionable insight in AI-Native Design. Through extensive real-world measurement, we found a clear relationship between file size and AI modification accuracy:
+This is arguably the most actionable insight in AI-Native Design. From day-to-day work with AI on production code, we observed a consistent relationship between file size and AI modification accuracy. The figures below are an **empirical estimate** from that experience, not the result of a controlled benchmark; treat them as a rule of thumb.
 
-| File Size | AI Accuracy | Assessment |
+| File Size | AI Accuracy (empirical estimate) | Assessment |
 |---|---|---|
 | ~100 lines | ~95% | Excellent, but too granular (many files = many reads) |
 | ~500 lines | ~85% | **Sweet spot begins** |
@@ -107,7 +107,7 @@ This is arguably the most actionable insight in AI-Native Design. Through extens
 | ~1,000 lines | ~70% | Acceptable maximum |
 | 2,000+ lines | ~50% | Coin flip -- avoid |
 
-<img src="https://mermaid.ink/img/eHljaGFydC1iZXRhCiAgICB0aXRsZSAiQUkgQWNjdXJhY3kgdnMgRmlsZSBTaXplIgogICAgeC1heGlzICJGaWxlIFNpemUgKGxpbmVzKSIgWzEwMCwgMjAwLCAzMDAsIDQwMCwgNTAwLCA2MDAsIDcwMCwgODAwLCA5MDAsIDEwMDAsIDE1MDAsIDIwMDBdCiAgICB5LWF4aXMgIkFjY3VyYWN5ICglKSIgNDAgLS0+IDEwMAogICAgbGluZSBbOTUsIDkzLCA5MSwgODgsIDg1LCA4MywgODAsIDc3LCA3NCwgNzAsIDYwLCA1MF0=" alt="AI Accuracy vs File Size" />
+<img src="https://mermaid.ink/img/eHljaGFydC1iZXRhCiAgICB0aXRsZSAiQUkgQWNjdXJhY3kgdnMgRmlsZSBTaXplIChlbXBpcmljYWwgZXN0aW1hdGUpIgogICAgeC1heGlzICJGaWxlIFNpemUgKGxpbmVzKSIgWzEwMCwgMjAwLCAzMDAsIDQwMCwgNTAwLCA2MDAsIDcwMCwgODAwLCA5MDAsIDEwMDAsIDE1MDAsIDIwMDBdCiAgICB5LWF4aXMgIkFjY3VyYWN5ICglKSIgNDAgLS0+IDEwMAogICAgbGluZSBbOTUsIDkzLCA5MSwgODgsIDg1LCA4MywgODAsIDc3LCA3NCwgNzAsIDYwLCA1MF0=" alt="AI Accuracy vs File Size (empirical estimate)" />
 
 The sweet spot exists because:
 - **Too small** (~100 lines): High accuracy per file, but AI must read 10+ files to understand a feature. Total token cost goes up, and cross-file reasoning introduces errors.
@@ -144,6 +144,8 @@ The sweet spot exists because:
 
 Average file size: **539 lines** -- right in the sweet spot.
 
+**Exceptions above 800 lines.** Five framework files sit at 937-1,044 lines: `nskit-dialog.js` (1,044), `nskit-page.js` (1,043), `ns-select.js` (1,040), `ns-table.js` (971), `nskit-panel.js` (937). Each holds one complete layer or widget (its whole lifecycle in one place), and they are framework internals that change far less often than application templates. We keep them whole rather than split one component across files, and treat ~1,000 lines as their ceiling (three are marginally over). The 500-800 line target applies primarily to application templates, where AI does most of its edits.
+
 ---
 
 ### 3. No Build Process
@@ -153,6 +155,8 @@ No webpack. No Vite. No transpilation. No bundling. Save file, refresh browser, 
 This is not nostalgia for simpler times. It is a deliberate elimination of an entire category of errors that AI frequently introduces:
 
 <img src="https://mermaid.ink/img/cGllIHRpdGxlICJCdWlsZCBFcnJvciBDYXRlZ29yaWVzIEVsaW1pbmF0ZWQgYnkgTm8tQnVpbGQiCiAgICAiRGVwZW5kZW5jeSBSZXNvbHV0aW9uIiA6IDI1CiAgICAiVHJhbnNwaWxhdGlvbiBFcnJvcnMiIDogMjAKICAgICJCdW5kbGUgQ29uZmlnIiA6IDIwCiAgICAiVHlwZSBNaXNtYXRjaCIgOiAxNQogICAgIlNvdXJjZSBNYXAgSXNzdWVzIiA6IDEwCiAgICAiSG90IFJlbG9hZCBGYWlsdXJlcyIgOiAxMA==" alt="Build Error Categories Eliminated" />
+
+*The proportions in this chart are illustrative, not measured.*
 
 When AI modifies code in a build-based project, it must reason about:
 - Will this import resolve correctly after bundling?
@@ -200,7 +204,7 @@ Whether it is a full page, a dialog modal, a sidebar panel, or a reusable part -
 
 ### 5. Token Efficiency as a Design Goal
 
-When AI reads your code, every line consumed is a token spent. Self-contained files are dramatically more token-efficient for AI operations.
+When AI reads your code, every line consumed is a token spent. Self-contained files mean fewer files to read and no cross-file tracing for AI operations.
 
 **Scenario: Change a button's click handler in a card component.**
 
@@ -208,18 +212,18 @@ When AI reads your code, every line consumed is a token spent. Self-contained fi
 |---|---|---|
 | Primary file | ~150 lines | ~600 lines |
 | Files AI must read | 8-15 (imports, hooks, context, types, styles) | 1 |
-| Total tokens consumed | ~15,000 - 37,000 | ~700 - 1,200 |
+| Total tokens consumed (est.) | ~15,000 - 37,000 | ~12,000 |
 | Build step after change | Yes | No |
 | Side-effect risk | Shared hook/context may affect other components | Zero -- file is self-contained |
 
-<img src="https://mermaid.ink/img/eHljaGFydC1iZXRhCiAgICB0aXRsZSAiVG9rZW5zIFJlcXVpcmVkIGZvciBTaW5nbGUgQ29tcG9uZW50IENoYW5nZSIKICAgIHgtYXhpcyBbIkFuZ3VsYXIiLCAiUmVhY3QiLCAiVnVlIiwgIkFJLU5hdGl2ZSJdCiAgICB5LWF4aXMgIlRva2VucyIgMCAtLT4gMzUwMDAKICAgIGJhciBbMzAwMDAsIDI1MDAwLCAyMDAwMCwgODAwXQ==" alt="Tokens Required by Paradigm" />
+<img src="https://mermaid.ink/img/eHljaGFydC1iZXRhCiAgICB0aXRsZSAiRXN0aW1hdGVkIFRva2VucyBwZXIgU2luZ2xlIENvbXBvbmVudCBDaGFuZ2UiCiAgICB4LWF4aXMgWyJBbmd1bGFyIiwgIlJlYWN0IiwgIlZ1ZSIsICJBSS1OYXRpdmUiXQogICAgeS1heGlzICJUb2tlbnMiIDAgLS0+IDI1MDAwCiAgICBiYXIgWzIyMjAwLCAxODgwMCwgMTc4MDAsIDEyMDAwXQ==" alt="Estimated Tokens by Paradigm" />
 
-**The math:**
-- React component change: ~25,000 tokens (midpoint estimate)
-- AI-Native component change: ~800 tokens
-- **Ratio: ~31x more token-efficient**
+**The math** (same method throughout: lines x ~20 tokens/line):
+- React component change: 940 lines across 8 files = ~18,800 tokens (range ~15,000 - 37,000)
+- AI-Native component change: 600 lines in 1 file = ~12,000 tokens
+- **Ratio: ~1.6x fewer tokens** in the mid-size example (~1.3x - 3x across the range)
 
-Over a session of 20 component modifications, that is 500,000 tokens vs 16,000 tokens. The compounding effect is significant -- especially when operating multiple AI sessions in parallel.
+The token saving is real but moderate. The larger difference is structural: **1 file instead of 8-15**, so there is no import chain to trace, no shared hook or context to reason about, and no cross-file side effects. Over a session of 20 component modifications, the mid-size example comes to ~376,000 tokens vs ~240,000 tokens -- and 160 file reads vs 20.
 
 > **Note on methodology:** React/Vue/Angular token estimates are based on typical mid-size application structures with shared hooks, context providers, and type definitions. Actual numbers vary by project. See [benchmarks/token-comparison.md](benchmarks/token-comparison.md) for detailed methodology.
 
@@ -333,9 +337,9 @@ templates/
     part-card.html          ← 600 lines (HTML + CSS + JS, complete)
 ```
 
-AI reads one file: 600 lines = **~1,200 tokens.**
+AI reads one file: 600 lines = **~12,000 tokens.**
 
-**Ratio: 15x to 31x more efficient**, depending on project modularity.
+**Ratio: ~1.6x fewer tokens** for the mid-size example (18,800 vs 12,000), **~1.3x to ~3x** across the 15,000 - 37,000 range, depending on project modularity -- with 1 file read instead of 8-15.
 
 For full methodology and raw data, see [benchmarks/token-comparison.md](benchmarks/token-comparison.md).
 
@@ -450,7 +454,7 @@ The principles are model-agnostic. Any LLM benefits from:
 - Self-contained files (no dependency tracing)
 - Consistent patterns (convention over configuration)
 
-The benchmarks in this document were measured using Claude, but the architectural principles apply equally to GPT-4, Gemini, or any future model. The 500-800 line sweet spot may shift as context windows grow, but the fundamental insight -- that AI accuracy degrades with file size -- is universal.
+The observations behind this document come from working with Claude, but the architectural principles apply equally to GPT-4, Gemini, or any future model. The 500-800 line sweet spot may shift as context windows grow, but the underlying observation -- that AI accuracy degrades as file size grows -- is not model-specific.
 
 ### "Can I adopt these principles incrementally?"
 
@@ -475,7 +479,7 @@ This is a trade-off: you lose granular unit test coverage but gain tests that ve
 
 These principles were developed and validated through [NSKit](https://nskit.io), a framework designed from the ground up for AI-human collaboration.
 
-NSKit is a production framework powering multiple live services. The benchmarks, file sizes, and case studies in this document are drawn from real NSKit projects.
+NSKit is a production framework powering multiple live services. The file sizes and case studies in this document are drawn from real NSKit projects; the token and accuracy figures are estimates (see the methodology notes above).
 
 ---
 

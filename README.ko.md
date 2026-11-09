@@ -12,7 +12,7 @@ React, Vue, Angular 같은 현대 프레임워크들은 **Human Developer Experi
 
 하지만 AI가 주요 협업자일 때 -- 코드를 읽고, 컨텍스트를 이해하고, 변경하고, 기능을 배포할 때 -- 최적화 대상이 달라집니다. **AI-Native Design**은 "어떤 구조가 AI의 정확성과 효율성을 극대화할까?"라는 질문에서 출발한 아키텍처 원칙입니다.
 
-이것은 프레임워크나 라이브러리가 아닙니다. 프로덕션 시스템의 실측 벤치마크에 기반한 설계 철학입니다.
+이것은 프레임워크나 라이브러리가 아닙니다. 프로덕션 시스템에서 나온 설계 철학이며, 줄 수 실측과 토큰 추정치로 뒷받침합니다(방법론은 [benchmarks/token-comparison.md](benchmarks/token-comparison.md)).
 
 ---
 
@@ -97,9 +97,9 @@ import styles from './UserCard.module.css';
 
 ### 2. 500-800줄 스위트 스팟
 
-AI-Native Design에서 가장 실행 가능한 통찰입니다. 실전 측정을 통해 파일 크기와 AI 수정 정확도 사이의 명확한 관계를 발견했습니다:
+AI-Native Design에서 가장 실행 가능한 통찰입니다. 프로덕션 코드를 AI와 함께 다루며 파일 크기와 AI 수정 정확도 사이에 일관된 관계를 관찰했습니다. 아래 수치는 그 경험에서 나온 **경험적 추정**이며, 통제된 벤치마크 결과가 아닙니다. 경험칙으로 보십시오.
 
-| 파일 크기 | AI 정확도 | 평가 |
+| 파일 크기 | AI 정확도 (경험적 추정) | 평가 |
 |---|---|---|
 | ~100줄 | ~95% | 훌륭하지만 너무 세분화 (많은 파일 = 많은 읽기) |
 | ~500줄 | ~85% | **스위트 스팟 시작** |
@@ -107,7 +107,7 @@ AI-Native Design에서 가장 실행 가능한 통찰입니다. 실전 측정을
 | ~1,000줄 | ~70% | 허용 가능한 최대치 |
 | 2,000줄+ | ~50% | 동전 던지기 -- 피할 것 |
 
-<img src="https://mermaid.ink/img/eHljaGFydC1iZXRhCiAgICB0aXRsZSAiQUkgQWNjdXJhY3kgdnMgRmlsZSBTaXplIgogICAgeC1heGlzICJGaWxlIFNpemUgKGxpbmVzKSIgWzEwMCwgMjAwLCAzMDAsIDQwMCwgNTAwLCA2MDAsIDcwMCwgODAwLCA5MDAsIDEwMDAsIDE1MDAsIDIwMDBdCiAgICB5LWF4aXMgIkFjY3VyYWN5ICglKSIgNDAgLS0+IDEwMAogICAgbGluZSBbOTUsIDkzLCA5MSwgODgsIDg1LCA4MywgODAsIDc3LCA3NCwgNzAsIDYwLCA1MF0=" alt="AI 정확도 vs 파일 크기" />
+<img src="https://mermaid.ink/img/eHljaGFydC1iZXRhCiAgICB0aXRsZSAiQUkgQWNjdXJhY3kgdnMgRmlsZSBTaXplIChlbXBpcmljYWwgZXN0aW1hdGUpIgogICAgeC1heGlzICJGaWxlIFNpemUgKGxpbmVzKSIgWzEwMCwgMjAwLCAzMDAsIDQwMCwgNTAwLCA2MDAsIDcwMCwgODAwLCA5MDAsIDEwMDAsIDE1MDAsIDIwMDBdCiAgICB5LWF4aXMgIkFjY3VyYWN5ICglKSIgNDAgLS0+IDEwMAogICAgbGluZSBbOTUsIDkzLCA5MSwgODgsIDg1LCA4MywgODAsIDc3LCA3NCwgNzAsIDYwLCA1MF0=" alt="AI 정확도 vs 파일 크기 (경험적 추정)" />
 
 **NSKit 프레임워크 실측 데이터** (22개 프로덕션 JS 파일, 총 11,850줄):
 
@@ -139,6 +139,8 @@ AI-Native Design에서 가장 실행 가능한 통찰입니다. 실전 측정을
 
 평균 파일 크기: **539줄** -- 스위트 스팟(500-800줄) 안.
 
+**800줄을 넘는 예외.** 프레임워크 파일 5개가 937-1,044줄입니다: `nskit-dialog.js`(1,044), `nskit-page.js`(1,043), `ns-select.js`(1,040), `ns-table.js`(971), `nskit-panel.js`(937). 각각 레이어 하나·위젯 하나의 전체(라이프사이클 전부)를 한 곳에 담고 있고, 애플리케이션 템플릿보다 수정 빈도가 훨씬 낮은 프레임워크 내부 파일입니다. 컴포넌트 하나를 여러 파일로 쪼개기보다 통째로 두고, 이들의 상한을 ~1,000줄로 봅니다(3개는 소폭 초과). 500-800줄 목표는 AI가 대부분의 수정을 하는 애플리케이션 템플릿에 우선 적용됩니다.
+
 ---
 
 ### 3. No Build Process
@@ -148,6 +150,8 @@ Webpack 없음. Vite 없음. 트랜스파일 없음. 번들링 없음. 파일 �
 옛날 방식에 대한 향수가 아닙니다. AI가 자주 발생시키는 에러 카테고리 전체를 의도적으로 제거하는 것입니다:
 
 <img src="https://mermaid.ink/img/cGllIHRpdGxlICJCdWlsZCBFcnJvciBDYXRlZ29yaWVzIEVsaW1pbmF0ZWQgYnkgTm8tQnVpbGQiCiAgICAiRGVwZW5kZW5jeSBSZXNvbHV0aW9uIiA6IDI1CiAgICAiVHJhbnNwaWxhdGlvbiBFcnJvcnMiIDogMjAKICAgICJCdW5kbGUgQ29uZmlnIiA6IDIwCiAgICAiVHlwZSBNaXNtYXRjaCIgOiAxNQogICAgIlNvdXJjZSBNYXAgSXNzdWVzIiA6IDEwCiAgICAiSG90IFJlbG9hZCBGYWlsdXJlcyIgOiAxMA==" alt="No-Build로 제거되는 빌드 에러 카테고리" />
+
+*차트의 비율은 측정값이 아니라 설명용 예시입니다.*
 
 빌드 프로세스가 없으면 피드백 루프가 즉각적입니다: **저장, 새로고침, 확인.** "로컬에선 컴파일 되는데 CI에서 실패" 같은 문제가 완전히 사라집니다.
 
@@ -189,7 +193,7 @@ PART.define('component-name', {
 
 ### 5. 토큰 효율을 설계 목표로
 
-AI가 코드를 읽을 때, 소비되는 모든 줄이 토큰 비용입니다. Self-contained 파일은 AI 작업에서 극적으로 높은 토큰 효율을 보여줍니다.
+AI가 코드를 읽을 때, 소비되는 모든 줄이 토큰 비용입니다. Self-contained 파일은 AI가 읽을 파일 수를 줄이고 파일 간 추적을 없앱니다.
 
 **시나리오: 카드 컴포넌트 안의 버튼 클릭 핸들러 변경.**
 
@@ -197,18 +201,18 @@ AI가 코드를 읽을 때, 소비되는 모든 줄이 토큰 비용입니다. S
 |---|---|---|
 | 주요 파일 | ~150줄 | ~600줄 |
 | AI가 읽어야 할 파일 수 | 8-15 (imports, hooks, context, types, styles) | 1 |
-| 소비 토큰 | ~15,000 - 37,000 | ~700 - 1,200 |
+| 소비 토큰 (추정) | ~15,000 - 37,000 | ~12,000 |
 | 변경 후 빌드 단계 | 필요 | 없음 |
 | 사이드 이펙트 위험 | 공유 hook/context가 다른 컴포넌트에 영향 가능 | 제로 -- 파일이 self-contained |
 
-<img src="https://mermaid.ink/img/eHljaGFydC1iZXRhCiAgICB0aXRsZSAiVG9rZW5zIFJlcXVpcmVkIGZvciBTaW5nbGUgQ29tcG9uZW50IENoYW5nZSIKICAgIHgtYXhpcyBbIkFuZ3VsYXIiLCAiUmVhY3QiLCAiVnVlIiwgIkFJLU5hdGl2ZSJdCiAgICB5LWF4aXMgIlRva2VucyIgMCAtLT4gMzUwMDAKICAgIGJhciBbMzAwMDAsIDI1MDAwLCAyMDAwMCwgODAwXQ==" alt="패러다임별 필요 토큰 수" />
+<img src="https://mermaid.ink/img/eHljaGFydC1iZXRhCiAgICB0aXRsZSAiRXN0aW1hdGVkIFRva2VucyBwZXIgU2luZ2xlIENvbXBvbmVudCBDaGFuZ2UiCiAgICB4LWF4aXMgWyJBbmd1bGFyIiwgIlJlYWN0IiwgIlZ1ZSIsICJBSS1OYXRpdmUiXQogICAgeS1heGlzICJUb2tlbnMiIDAgLS0+IDI1MDAwCiAgICBiYXIgWzIyMjAwLCAxODgwMCwgMTc4MDAsIDEyMDAwXQ==" alt="패러다임별 추정 토큰 수" />
 
-**계산:**
-- React 컴포넌트 변경: ~25,000 토큰 (중간값 추정)
-- AI-Native 컴포넌트 변경: ~800 토큰
-- **비율: ~31배 토큰 효율적**
+**계산** (전부 같은 방법: 줄 수 x 줄당 ~20 토큰):
+- React 컴포넌트 변경: 8개 파일 940줄 = ~18,800 토큰 (범위 ~15,000 - 37,000)
+- AI-Native 컴포넌트 변경: 1개 파일 600줄 = ~12,000 토큰
+- **비율: 중간 규모 예시에서 ~1.6배 적은 토큰** (범위 전체로는 ~1.3 - 3배)
 
-20개 컴포넌트 수정 세션에서 500,000 토큰 vs 16,000 토큰. 복리 효과가 상당합니다 -- 특히 여러 AI 세션을 병렬로 운영할 때.
+토큰 절감은 실재하지만 크지 않습니다. 더 큰 차이는 구조에 있습니다: **8-15개 대신 1개 파일**이라 추적할 import 체인도, 따져야 할 공유 hook·context도, 파일 간 사이드 이펙트도 없습니다. 20개 컴포넌트 수정 세션이면 중간 규모 예시 기준 ~376,000 토큰 vs ~240,000 토큰, 파일 읽기 160회 vs 20회입니다.
 
 > **방법론 참고:** React/Vue/Angular 토큰 추정치는 공유 hooks, context providers, type definitions을 가진 일반적인 중간 규모 애플리케이션 구조를 기반으로 합니다. 실제 수치는 프로젝트에 따라 다릅니다. 상세 방법론은 [benchmarks/token-comparison.md](benchmarks/token-comparison.md)를 참조하세요.
 
@@ -279,10 +283,12 @@ public ResponseVO getProfile(CommandContext ctx) {
 
 | 프레임워크 | 읽어야 할 파일 | 총 줄 수 | 추정 토큰 | AI-Native 대비 |
 |---|---|---|---|---|
-| Angular | 11 | 1,110 | ~22,200 | 18.5x |
-| React | 8 | 940 | ~18,800 | 15.7x |
-| Vue | 7 | 890 | ~17,800 | 14.8x |
-| **AI-Native** | **1** | **600** | **~1,200** | **1x** |
+| Angular | 11 | 1,110 | ~22,200 | 1.85x |
+| React | 8 | 940 | ~18,800 | 1.57x |
+| Vue | 7 | 890 | ~17,800 | 1.48x |
+| **AI-Native** | **1** | **600** | **~12,000** | **1x** |
+
+같은 줄당 토큰 기준이면 토큰 절감은 ~1.5 - 1.9배 수준이고, 더 큰 차이는 열어서 따져야 할 파일 수(7-11개 vs 1개)입니다.
 
 상세 방법론은 [benchmarks/token-comparison.md](benchmarks/token-comparison.md)를 참조하세요.
 
@@ -391,6 +397,8 @@ AI-Native Design은 다르게 확장합니다. 더 많은 인간 개발자를 �
 - Self-contained 파일 (의존성 추적 불필요)
 - 일관된 패턴 (convention over configuration)
 
+이 문서의 관찰은 Claude와 작업하며 얻은 것이지만, 아키텍처 원칙은 GPT-4, Gemini 등 다른 모델에도 똑같이 적용됩니다. 컨텍스트 윈도우가 커지면 500-800줄 스위트 스팟은 이동할 수 있지만, 파일이 커질수록 AI 정확도가 떨어진다는 관찰 자체는 특정 모델에 국한되지 않습니다.
+
 ### "점진적으로 도입할 수 있나요?"
 
 네. React 앱을 다시 작성할 필요 없습니다:
@@ -408,7 +416,7 @@ AI-Native Design은 다르게 확장합니다. 더 많은 인간 개발자를 �
 
 이 원칙들은 [NSKit](https://nskit.io)을 통해 개발되고 검증되었습니다. NSKit은 AI-인간 협업을 위해 처음부터 설계된 프레임워크입니다.
 
-NSKit은 여러 라이브 서비스를 구동하는 프로덕션 프레임워크입니다. 이 문서의 벤치마크, 파일 크기, 사례 연구는 실제 NSKit 프로젝트에서 가져왔습니다.
+NSKit은 여러 라이브 서비스를 구동하는 프로덕션 프레임워크입니다. 이 문서의 파일 크기와 사례 연구는 실제 NSKit 프로젝트에서 가져왔고, 토큰·정확도 수치는 추정치입니다(위 방법론 참고).
 
 ---
 

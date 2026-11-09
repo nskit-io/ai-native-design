@@ -156,10 +156,10 @@ templates/
 
 | File | Lines | Tokens |
 |---|---|---|
-| part-card.html | 600 | 1,200 |
-| **Total** | **600** | **1,200** |
+| part-card.html | 600 | 12,000 |
+| **Total** | **600** | **12,000** |
 
-**Range: 700 - 1,200 tokens** (depending on component complexity)
+Same method as above (~20 tokens/line). A smaller self-contained component costs proportionally less (e.g. 350 lines = ~7,000 tokens).
 
 ### Why Only One File
 
@@ -176,10 +176,14 @@ There are no imports to trace. The IIFE closure ensures scope isolation. The fra
 
 | Framework | Files to Read | Total Lines | Est. Tokens | Ratio vs AI-Native |
 |---|---|---|---|---|
-| Angular | 11 | 1,110 | ~22,200 | 18.5x |
-| React | 8 | 940 | ~18,800 | 15.7x |
-| Vue | 7 | 890 | ~17,800 | 14.8x |
-| **AI-Native** | **1** | **600** | **~1,200** | **1x** |
+| Angular | 11 | 1,110 | ~22,200 | 1.85x |
+| React | 8 | 940 | ~18,800 | 1.57x |
+| Vue | 7 | 890 | ~17,800 | 1.48x |
+| **AI-Native** | **1** | **600** | **~12,000** | **1x** |
+
+Across the stated ranges (React 15,000 - 37,000, Vue 12,000 - 25,000, Angular 18,000 - 35,000 tokens), the ratio vs AI-Native is roughly 1.0x - 3.1x.
+
+**Reading the result.** At the same tokens-per-line rate, the token saving is moderate (~1.5x - 1.9x for these examples). The larger difference is the number of files AI must open and reason across: 7-11 files vs 1. Earlier versions of this document listed the self-contained file as ~1,200 tokens (and the ratio as 15x - 31x); that was an arithmetic error (600 lines x 20 tokens/line = 12,000), corrected here.
 
 ---
 
