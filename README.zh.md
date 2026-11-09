@@ -86,3 +86,9 @@ React、Vue、Angular 等现代框架是为 **Human Developer Experience** 精�
 © 2026 Neoulsoft Inc.
 
 </div>
+
+---
+
+## 许可证
+
+> 本仓库以 MIT 许可证公开设计模式与参考资料。NSKit 框架本体（运行时、脚手架、检查器与运维标准）为 Neoulsoft Inc. 的非公开资产，另行以商业许可提供。

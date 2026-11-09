@@ -435,6 +435,8 @@ NSKit은 여러 라이브 서비스를 구동하는 프로덕션 프레임워크
 
 CC BY-NC-SA 4.0 — see [LICENSE](LICENSE)
 
+> 이 리포는 설계 패턴과 레퍼런스를 MIT 라이선스로 공개한 것입니다. NSKit 프레임워크 본체(런타임·스캐폴딩·검사기·운영 표준)는 Neoulsoft Inc. 의 비공개 자산이며 별도 상용 라이선스로 제공됩니다.
+
 ---
 
 <p align="center">
